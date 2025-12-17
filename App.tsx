@@ -67,8 +67,13 @@ const App: React.FC = () => {
     // Listen for auth changes
     const {
       data: { subscription },
-    } = supabase.auth.onAuthStateChange((_event, session) => {
+    } = supabase.auth.onAuthStateChange((event, session) => {
       setSession(session);
+      
+      if (event === 'PASSWORD_RECOVERY') {
+        setActiveView('settings');
+      }
+
       if (session) {
         // If user logs in (or was already logged in), fetch data
         fetchData();

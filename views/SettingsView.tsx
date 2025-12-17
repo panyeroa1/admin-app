@@ -1,5 +1,5 @@
-import React from 'react';
-import { Save, User, Bell, Moon, Globe, LogOut } from 'lucide-react';
+import React, { useState } from 'react';
+import { Save, User, Bell, Moon, Globe, LogOut, Lock, Loader2 } from 'lucide-react';
 import { AppSettings } from '../types';
 import { supabase } from '../lib/supabase';
 
@@ -9,7 +9,14 @@ interface SettingsViewProps {
 }
 
 const SettingsView: React.FC<SettingsViewProps> = ({ settings, updateSettings }) => {
+  const [loading, setLoading] = useState(false);
+  const [message, setMessage] = useState<{ type: 'success' | 'error', text: string } | null>(null);
   
+  const [passwords, setPasswords] = useState({
+    new: '',
+    confirm: ''
+  });
+
   const handleProfileChange = (field: string, value: string) => {
     updateSettings({
       profile: { ...settings.profile, [field]: value }
@@ -20,8 +27,37 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, updateSettings })
     await supabase.auth.signOut();
   };
 
+  const handlePasswordUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (passwords.new !== passwords.confirm) {
+      setMessage({ type: 'error', text: 'Passwords do not match' });
+      return;
+    }
+    if (passwords.new.length < 6) {
+      setMessage({ type: 'error', text: 'Password must be at least 6 characters' });
+      return;
+    }
+
+    setLoading(true);
+    setMessage(null);
+
+    try {
+      const { error } = await supabase.auth.updateUser({
+        password: passwords.new
+      });
+
+      if (error) throw error;
+      setMessage({ type: 'success', text: 'Password updated successfully' });
+      setPasswords({ new: '', confirm: '' });
+    } catch (error: any) {
+      setMessage({ type: 'error', text: error.message });
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
-    <div className="space-y-6 max-w-3xl">
+    <div className="space-y-6 max-w-3xl pb-10">
       <div className="flex justify-between items-start">
         <div>
           <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Settings</h2>
@@ -36,6 +72,13 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, updateSettings })
         </button>
       </div>
 
+      {message && (
+        <div className={`p-4 rounded-lg text-sm ${message.type === 'success' ? 'bg-green-50 text-green-700 dark:bg-green-900/20 dark:text-green-400' : 'bg-red-50 text-red-700 dark:bg-red-900/20 dark:text-red-400'}`}>
+          {message.text}
+        </div>
+      )}
+
+      {/* Profile Settings */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 space-y-6">
         <div className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-700 pb-4">
           <User className="text-gray-400" />
@@ -56,9 +99,9 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, updateSettings })
             <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
             <input 
               type="email" 
-              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              disabled
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-600 text-gray-500 dark:text-gray-300 cursor-not-allowed"
               value={settings.profile.email}
-              onChange={e => handleProfileChange('email', e.target.value)}
             />
           </div>
           <div>
@@ -82,6 +125,49 @@ const SettingsView: React.FC<SettingsViewProps> = ({ settings, updateSettings })
         </div>
       </div>
 
+      {/* Security Settings */}
+      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 space-y-6">
+        <div className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-700 pb-4">
+          <Lock className="text-gray-400" />
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Security</h3>
+        </div>
+
+        <form onSubmit={handlePasswordUpdate} className="grid grid-cols-1 md:grid-cols-2 gap-6 items-end">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">New Password</label>
+            <input 
+              type="password" 
+              required
+              minLength={6}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              value={passwords.new}
+              onChange={e => setPasswords({...passwords, new: e.target.value})}
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Confirm Password</label>
+            <input 
+              type="password" 
+              required
+              minLength={6}
+              className="w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-blue-500 bg-white dark:bg-gray-700 text-gray-900 dark:text-white"
+              value={passwords.confirm}
+              onChange={e => setPasswords({...passwords, confirm: e.target.value})}
+            />
+          </div>
+          <div className="md:col-span-2 flex justify-end">
+            <button 
+              type="submit" 
+              disabled={loading}
+              className="bg-gray-900 dark:bg-blue-600 hover:bg-gray-800 dark:hover:bg-blue-700 text-white px-4 py-2 rounded-lg transition-colors text-sm font-medium flex items-center gap-2 disabled:opacity-70"
+            >
+              {loading ? <Loader2 size={16} className="animate-spin" /> : 'Update Password'}
+            </button>
+          </div>
+        </form>
+      </div>
+
+      {/* App Preferences */}
       <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 p-6 space-y-6">
         <div className="flex items-center gap-3 border-b border-gray-100 dark:border-gray-700 pb-4">
           <Globe className="text-gray-400" />
