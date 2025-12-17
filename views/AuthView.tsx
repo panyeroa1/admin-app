@@ -21,7 +21,12 @@ const AuthView: React.FC = () => {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: 'google',
         options: {
-          redirectTo: window.location.origin
+          redirectTo: window.location.origin,
+          queryParams: {
+            access_type: 'offline',
+            prompt: 'consent',
+            client_id: '73350400049-s75v3f5ieao103n0oba6rgjo59f12rts.apps.googleusercontent.com'
+          }
         }
       });
       if (error) throw error;
