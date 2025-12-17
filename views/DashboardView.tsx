@@ -42,15 +42,15 @@ const DashboardView: React.FC<DashboardProps> = ({ leads, tasks, messages, trans
   const StatCard = ({ title, value, subtext, icon: Icon, colorClass, onClick }: any) => (
     <div 
       onClick={onClick}
-      className="bg-white p-6 rounded-xl shadow-sm border border-gray-100 hover:shadow-md transition-shadow cursor-pointer relative overflow-hidden group"
+      className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700 hover:shadow-md transition-shadow cursor-pointer relative overflow-hidden group"
     >
       <div className={`absolute top-0 left-0 right-0 h-1 bg-gradient-to-r ${colorClass}`} />
       <div className="flex justify-between items-start mb-4">
         <div>
-          <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider">{title}</h3>
-          <div className="text-2xl font-bold text-gray-900 mt-1">{value}</div>
+          <h3 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">{title}</h3>
+          <div className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{value}</div>
         </div>
-        <div className={`p-3 rounded-lg ${colorClass.replace('from-', 'bg-').replace('to-', '').split(' ')[0]} bg-opacity-10 text-gray-700`}>
+        <div className={`p-3 rounded-lg ${colorClass.replace('from-', 'bg-').replace('to-', '').split(' ')[0]} bg-opacity-10 text-gray-700 dark:text-gray-300`}>
           <Icon size={24} />
         </div>
       </div>
@@ -67,11 +67,11 @@ const DashboardView: React.FC<DashboardProps> = ({ leads, tasks, messages, trans
       {/* Header Section */}
       <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
-          <h2 className="text-2xl font-bold text-gray-900">Dashboard Overview</h2>
-          <p className="text-gray-500 mt-1">Real-time insights and performance metrics.</p>
+          <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Dashboard Overview</h2>
+          <p className="text-gray-500 dark:text-gray-400 mt-1">Real-time insights and performance metrics.</p>
         </div>
         <div className="flex gap-2">
-           <button className="px-4 py-2 bg-white border border-gray-200 text-gray-700 rounded-lg text-sm font-medium hover:bg-gray-50">
+           <button className="px-4 py-2 bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 text-gray-700 dark:text-gray-300 rounded-lg text-sm font-medium hover:bg-gray-50 dark:hover:bg-gray-700">
              Export Report
            </button>
         </div>
@@ -115,10 +115,10 @@ const DashboardView: React.FC<DashboardProps> = ({ leads, tasks, messages, trans
 
       {/* Charts Section */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        <div className="lg:col-span-2 bg-white p-6 rounded-xl shadow-sm border border-gray-100">
+        <div className="lg:col-span-2 bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
           <div className="flex items-center justify-between mb-6">
-            <h3 className="font-bold text-gray-900">Revenue Analytics</h3>
-            <select className="bg-gray-50 border border-gray-200 text-gray-700 text-sm rounded-lg p-2 outline-none">
+            <h3 className="font-bold text-gray-900 dark:text-white">Revenue Analytics</h3>
+            <select className="bg-gray-50 dark:bg-gray-700 border border-gray-200 dark:border-gray-600 text-gray-700 dark:text-white text-sm rounded-lg p-2 outline-none">
               <option>This Year</option>
               <option>Last Year</option>
             </select>
@@ -145,29 +145,29 @@ const DashboardView: React.FC<DashboardProps> = ({ leads, tasks, messages, trans
           </div>
         </div>
 
-        <div className="bg-white p-6 rounded-xl shadow-sm border border-gray-100">
-          <h3 className="font-bold text-gray-900 mb-4">Recent Activity</h3>
+        <div className="bg-white dark:bg-gray-800 p-6 rounded-xl shadow-sm border border-gray-100 dark:border-gray-700">
+          <h3 className="font-bold text-gray-900 dark:text-white mb-4">Recent Activity</h3>
           <div className="space-y-4">
             {leads.slice(0, 3).map(lead => (
-              <div key={lead.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+              <div key={lead.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                 <div className="w-8 h-8 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0">
                   <TrendingUp size={14} />
                 </div>
                 <div>
-                  <p className="text-sm font-medium text-gray-900">New lead: {lead.name}</p>
-                  <p className="text-xs text-gray-500 mt-0.5">Interested in {lead.source}</p>
+                  <p className="text-sm font-medium text-gray-900 dark:text-white">New lead: {lead.name}</p>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Interested in {lead.source}</p>
                 </div>
                 <span className="text-xs text-gray-400 ml-auto whitespace-nowrap">2m ago</span>
               </div>
             ))}
             {tasks.slice(0, 2).map(task => (
-               <div key={task.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 transition-colors">
+               <div key={task.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
                <div className="w-8 h-8 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
                  <ClipboardList size={14} />
                </div>
                <div>
-                 <p className="text-sm font-medium text-gray-900">{task.title}</p>
-                 <p className="text-xs text-gray-500 mt-0.5">Due: {new Date(task.dueDate).toLocaleDateString()}</p>
+                 <p className="text-sm font-medium text-gray-900 dark:text-white">{task.title}</p>
+                 <p className="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Due: {new Date(task.dueDate).toLocaleDateString()}</p>
                </div>
                <span className="text-xs text-gray-400 ml-auto whitespace-nowrap">1h ago</span>
              </div>
@@ -176,7 +176,7 @@ const DashboardView: React.FC<DashboardProps> = ({ leads, tasks, messages, trans
               <div className="text-center py-8 text-gray-400 text-sm">No recent activity</div>
             )}
           </div>
-          <button onClick={() => setActiveView('leads')} className="w-full mt-4 py-2 text-sm text-blue-600 font-medium hover:bg-blue-50 rounded-lg transition-colors">
+          <button onClick={() => setActiveView('leads')} className="w-full mt-4 py-2 text-sm text-blue-600 font-medium hover:bg-blue-50 dark:hover:bg-blue-900/20 rounded-lg transition-colors">
             View All Activity
           </button>
         </div>
